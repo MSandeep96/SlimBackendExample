@@ -36,7 +36,7 @@ class DbHandler {
     * get tasks
     */
     public function getTasks(){
-        $result=$this->conn->query("SELECT * FROM `random_stuff`");
+        $result=$this->conn->query("SELECT * FROM `random_stuff`;");
         $data=array();
         while($row=$result->fetch_assoc()){
             $row_data["s_no"]=(int)$row["s_no"];
@@ -44,6 +44,33 @@ class DbHandler {
             $data[]= $row_data;
         }
         return $data;
+    }
+
+    /**
+    * paginate the tasks
+    */
+    public function getTasksPag($page_no){
+        $data=array();
+        $offse=$page_no*5;
+        if($offse>$this->getTaskCount()){
+            $data["out_of_limit_error"]=true;
+            return $data;
+        }
+        $tasks_in_limit=$this->conn->query("SELECT * FROM `random_stuff` LIMIT $offse , 5;");
+        while($row=$tasks_in_limit->fetch_assoc()){
+            $row_data["s_no"]=(int)$row["s_no"];
+            $row_data["task"]=$row["task"];
+            $data[]= $row_data;
+        }
+        return $data;
+    }
+
+    /**
+    * get tasks count
+    */
+    public function getTaskCount(){
+        $result=$this->conn->query("SELECT * FROM `random_stuff`;");
+        return $result->num_rows;
     }
 
 }
